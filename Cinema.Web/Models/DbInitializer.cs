@@ -64,7 +64,6 @@ namespace Cinema.Web.Models
             };
 
             movies.ForEach(movie => context.Movies.Add(movie));
-            context.SaveChanges();
 
             #endregion
 
@@ -93,7 +92,6 @@ namespace Cinema.Web.Models
             };
 
             screens.ForEach(screen => context.Screens.Add(screen));
-            context.SaveChanges();
 
             #endregion
 
@@ -101,12 +99,11 @@ namespace Cinema.Web.Models
 
             var showtimes = new List<Showtime>();
 
-            showtimes.AddRange(CreateShowtimes(1, 1, 113, 0.5));
-            showtimes.AddRange(CreateShowtimes(2, 2, 126, 0.25));
-            showtimes.AddRange(CreateShowtimes(3, 3, 131, 0));
+            showtimes.AddRange(CreateShowtimes(movies[0], screens[0], 113, 0.5));
+            showtimes.AddRange(CreateShowtimes(movies[1], screens[1], 126, 0.25));
+            showtimes.AddRange(CreateShowtimes(movies[2], screens[2], 131, 0));
 
             showtimes.ForEach(showtime => context.Showtimes.Add(showtime));
-            context.SaveChanges();
 
             #endregion
 
@@ -123,7 +120,6 @@ namespace Cinema.Web.Models
                         seats.Add(new Seat
                         {
                             Showtime = showtime,
-                            Screen = showtime.Screen,
                             RowNumber = rowNumber,
                             SeatNumber = seatNumber,
                             Status = SeatStatus.Free
@@ -133,7 +129,6 @@ namespace Cinema.Web.Models
             }
 
             seats.ForEach(seat => context.Seats.Add(seat));
-            context.SaveChanges();
 
             #endregion
 
@@ -141,9 +136,10 @@ namespace Cinema.Web.Models
 
             #endregion
 
+            context.SaveChanges();
         }
 
-        private static List<Showtime> CreateShowtimes(int movieId, int screenId, int runtime, double hoursTillFirstShow)
+        private static List<Showtime> CreateShowtimes(Movie movie, Screen screen, int runtime, double hoursTillFirstShow)
         {
             const int openingTime = 16;
             const int numberOfDays = 7;
@@ -160,12 +156,12 @@ namespace Cinema.Web.Models
                 {
                     showtimes.Add(new Showtime
                     {
-                        MovieId = movieId,
+                        Movie = movie,
                         Time = DateTime.Today
                             .AddDays(day)
                             .AddHours(firstShowtime)
                             .AddMinutes(showtimeNumber * timeBetweenShowTimes),
-                        ScreenId = screenId
+                        Screen = screen
                     });
                 }
             }
