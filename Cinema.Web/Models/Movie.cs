@@ -12,18 +12,17 @@ namespace Cinema.Web.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(30)]
+        [MaxLength(100)]
         public string Title { get; set; }
 
         [Required]
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string Director { get; set; }
 
         [Required]
         public string Cast { get; set; }
 
         [Required]
-        [MaxLength(2000)]
         public string Storyline { get; set; }
 
         [Required]

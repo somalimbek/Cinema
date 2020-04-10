@@ -23,10 +23,6 @@ namespace Cinema.Web.Models
         public int ShowtimeId { get; set; }
 
         [Required]
-        [DisplayName("Screen")]
-        public int ScreenId { get; set; }
-
-        [Required]
         public int RowNumber { get; set; }
 
         [Required]
@@ -35,7 +31,7 @@ namespace Cinema.Web.Models
         [Required]
         public SeatStatus Status { get; set; }
 
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string CustomerName { get; set; }
 
         [MaxLength(15)]
@@ -43,6 +39,5 @@ namespace Cinema.Web.Models
 
 
         public virtual Showtime Showtime { get; set; }
-        public virtual Screen Screen { get; set; }
     }
 }
