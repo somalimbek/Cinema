@@ -36,7 +36,7 @@ namespace Cinema.Web.Controllers
 
         public IActionResult Book(int showtimeId)
         {
-            return RedirectToAction("Index", "Booking", showtimeId);
+            return RedirectToAction("Index", "Booking", new { id = showtimeId });
         }
     }
 }
