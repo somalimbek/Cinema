@@ -21,7 +21,7 @@ namespace Cinema.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(_service.GetMovies());
+            return View(_service.GetLatestMovies());
         }
 
         public IActionResult DisplayImage(int id)

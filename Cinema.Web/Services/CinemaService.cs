@@ -34,6 +34,14 @@ namespace Cinema.Web.Services
                 .FirstOrDefault(movie => movie.Id == id);
         }
 
+        public List<Movie> GetLatestMovies(int count = 5)
+        {
+            return _context.Movies
+                .OrderByDescending(movie => movie.Added)
+                .Take(count)
+                .ToList();
+        }
+
         #endregion
 
         #region Update

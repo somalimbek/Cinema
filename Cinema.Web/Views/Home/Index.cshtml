@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Cinema.Web.Models.Movie>
+﻿@model List<Cinema.Web.Models.Movie>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -6,8 +6,9 @@
 
 <div class="text-center">
     <h1 class="display-4">Campus Cinema</h1>
-
-    <table class="latest">
+</div>
+<div>
+    <table class="table">
         <thead>
             <tr>
                 <th>
@@ -16,20 +17,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var movie in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => movie.Title)
-                    </td>
-                    <td>
+            <tr>
+                @foreach (var movie in Model)
+                {
+                    <td height="100%" width="20%">
                         @if (movie.Poster != null)
                         {
-                            <img src="@Url.Action("DisplayImage", "Home", new { id = movie.Id })" class="item"/>
+                            <img src="@Url.Action("DisplayImage", "Home", new { id = movie.Id })" style="max-height: 100%; max-width: 100%"/>
                         }
                     </td>
-                </tr>
-            }
-        </tbody>
+                }
+            </tr>
+         </tbody>
     </table>
 </div>
