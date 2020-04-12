@@ -21,7 +21,10 @@ namespace Cinema.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(_service.GetLatestMovies());
+            var viewModel = new HomeViewModel();
+            viewModel.LatestMovies = _service.GetLatestMovies();
+            viewModel.TodaysShowtimesByMovies = _service.GetTodaysShowtimesByMovies();
+            return View("Index", viewModel);
         }
 
         public IActionResult DisplayImage(int id)

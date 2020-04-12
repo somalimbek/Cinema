@@ -1,4 +1,4 @@
-﻿@model List<Cinema.Web.Models.Movie>
+﻿@model HomeViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -18,7 +18,7 @@
         </thead>
         <tbody>
             <tr>
-                @foreach (var movie in Model)
+                @foreach (var movie in Model.LatestMovies)
                 {
                     <td height="100%" width="20%">
                         @if (movie.Poster != null)
@@ -29,5 +29,32 @@
                 }
             </tr>
          </tbody>
+    </table>
+</div>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Mai műsor
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var showtimes in Model.TodaysShowtimesByMovies)
+            {
+                <tr>
+                    <td>
+                        @showtimes[0].Movie.Title
+                    </td>
+                    @foreach (var showtime in showtimes)
+                    {
+                        <td>
+                            @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
     </table>
 </div>
