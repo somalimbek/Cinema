@@ -13,12 +13,12 @@ namespace Cinema.Web.Models
 
         public static void Initialize(IServiceProvider serviceProvider, string imageDirectory)
         {
-            CinemaContext context = serviceProvider.GetRequiredService<CinemaContext>();
+            CinemaContext _context = serviceProvider.GetRequiredService<CinemaContext>();
 
             //context.Database.EnsureCreated();
-            context.Database.Migrate();
+            _context.Database.Migrate();
 
-            if (context.Movies.Any())
+            if (_context.Movies.Any())
             {
                 return;
             }
@@ -63,7 +63,7 @@ namespace Cinema.Web.Models
                 }
             };
 
-            movies.ForEach(movie => context.Movies.Add(movie));
+            movies.ForEach(movie => _context.Movies.Add(movie));
 
             #endregion
 
@@ -91,7 +91,7 @@ namespace Cinema.Web.Models
                 }
             };
 
-            screens.ForEach(screen => context.Screens.Add(screen));
+            screens.ForEach(screen => _context.Screens.Add(screen));
 
             #endregion
 
@@ -103,7 +103,7 @@ namespace Cinema.Web.Models
             showtimes.AddRange(CreateShowtimes(movies[1], screens[1], 126, 0.25));
             showtimes.AddRange(CreateShowtimes(movies[2], screens[2], 131, 0));
 
-            showtimes.ForEach(showtime => context.Showtimes.Add(showtime));
+            showtimes.ForEach(showtime => _context.Showtimes.Add(showtime));
 
             #endregion
 
@@ -128,7 +128,7 @@ namespace Cinema.Web.Models
                 }
             }
 
-            seats.ForEach(seat => context.Seats.Add(seat));
+            seats.ForEach(seat => _context.Seats.Add(seat));
 
             #endregion
 
@@ -136,7 +136,7 @@ namespace Cinema.Web.Models
 
             #endregion
 
-            context.SaveChanges();
+            _context.SaveChanges();
         }
 
         private static List<Showtime> CreateShowtimes(Movie movie, Screen screen, int runtime, double hoursTillFirstShow)

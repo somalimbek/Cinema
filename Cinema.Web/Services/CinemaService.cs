@@ -8,11 +8,11 @@ namespace Cinema.Web.Services
 {
     public class CinemaService
     {
-        private readonly CinemaContext context;
+        private readonly CinemaContext _context;
 
         public CinemaService(CinemaContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         #region Create
@@ -22,10 +22,16 @@ namespace Cinema.Web.Services
 
         public List<Movie> GetMovies(string title = null)
         {
-            return context.Movies
+            return _context.Movies
                 .Where(movie => movie.Title.Contains(title ?? ""))
                 .OrderBy(movie => movie.Title)
                 .ToList();
+        }
+
+        public Movie GetMovie(int id)
+        {
+            return _context.Movies
+                .FirstOrDefault(movie => movie.Id == id);
         }
 
         #endregion

@@ -6,21 +6,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Cinema.Web.Models;
+using Cinema.Web.Services;
 
 namespace Cinema.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly CinemaService _service;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(CinemaService service)
         {
-            _logger = logger;
+            _service = service;
         }
 
         public IActionResult Index()
         {
-            return View();
+            return View(_service.GetMovies());
+        }
+
+        public IActionResult DisplayImage(int id)
+        {
+            var movie = _service.GetMovie(id);
+            return File(movie.Poster, "image/jpg");
         }
 
         public IActionResult Privacy()
