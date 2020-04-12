@@ -1,0 +1,39 @@
+﻿@model MovieViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>@Model.Movie.Title</h1>
+
+<div">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td rowspan="6">
+                    <img src="@Url.Action("DisplayImage", "Home", new { id = Model.Movie.Id })" style="max-height: 300px" />
+                </td>
+            </tr>
+            <tr>
+                <th>Rendező:</th>
+                <td>@Model.Movie.Director</td>
+            </tr>
+            <tr>
+                <th>Főszereplők:</th>
+                <td>@Model.Movie.Cast</td>
+            </tr>
+            <tr>
+                <th>Tartalom:</th>
+                <td> @Model.Movie.Storyline</td>
+            </tr>
+            <tr>
+                <th>Hossz:</th>
+                <td>@Model.Movie.Runtime perc</td>
+            </tr>
+            <tr>
+                <th>Premier:</th>
+                <td>@Model.Movie.Added.Date.ToString().Substring(0, 13)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

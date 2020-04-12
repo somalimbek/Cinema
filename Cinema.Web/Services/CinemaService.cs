@@ -29,9 +29,41 @@ namespace Cinema.Web.Services
                 .ToList();
         }
 
+        public List<List<Showtime>> GetShowtimesForMovie(int movieId)
+        {
+            var showtimesForMovie = _context.Showtimes
+                .Include(showtime => showtime.Movie)
+                .Include(showtime => showtime.Screen)
+                .Where(showtime => showtime.Movie.Id == movieId)
+                .OrderBy(showtime => showtime.Time)
+                .ToList();
+
+            var showtimesOrderedByDays = new List<List<Showtime>>();
+            var showtimesOfDay = new List<Showtime>() { showtimesForMovie[0] };
+            for (int i = 1; i < showtimesForMovie.Count; i++)
+            {
+                if (showtimesForMovie[i].Time.Day == showtimesForMovie[i - 1].Time.Day && i != showtimesForMovie.Count - 1)
+                {
+                    showtimesOfDay.Add(showtimesForMovie[i]);
+                }
+                else
+                {
+                    if (i == showtimesForMovie.Count - 1)
+                    {
+                        showtimesOfDay.Add(showtimesForMovie[i]);
+                    }
+                    showtimesOfDay = showtimesOfDay.OrderBy(showtime => showtime.Time).ToList();
+                    showtimesOrderedByDays.Add(showtimesOfDay);
+                    showtimesOfDay = new List<Showtime>() { showtimesForMovie[i] };
+                }
+            }
+
+            return showtimesOrderedByDays;
+        }
+
         public List<List<Showtime>> GetTodaysShowtimesByMovies()
         {
-            var showtimes = _context.Showtimes
+            var todaysShowtimes = _context.Showtimes
                 .Include(showtime => showtime.Movie)
                 .Include(showtime => showtime.Screen)
                 .Where(showtime => showtime.Time.Date == DateTime.Today)
@@ -39,22 +71,22 @@ namespace Cinema.Web.Services
                 .ToList();
 
             var showtimesOrderedByMovieTitleAndTime = new List<List<Showtime>>();
-            var showtimesOfMovie = new List<Showtime>() { showtimes[0] };
-            for (int i = 1; i < showtimes.Count; i++)
+            var showtimesOfMovie = new List<Showtime>() { todaysShowtimes[0] };
+            for (int i = 1; i < todaysShowtimes.Count; i++)
             {
-                if (showtimes[i].Movie.Title == showtimes[i - 1].Movie.Title && i != showtimes.Count - 1)
+                if (todaysShowtimes[i].Movie.Title == todaysShowtimes[i - 1].Movie.Title && i != todaysShowtimes.Count - 1)
                 {
-                    showtimesOfMovie.Add(showtimes[i]);
+                    showtimesOfMovie.Add(todaysShowtimes[i]);
                 }
                 else
                 {
-                    if (i == showtimes.Count - 1)
+                    if (i == todaysShowtimes.Count - 1)
                     {
-                        showtimesOfMovie.Add(showtimes[i]);
+                        showtimesOfMovie.Add(todaysShowtimes[i]);
                     }
                     showtimesOfMovie = showtimesOfMovie.OrderBy(showtime => showtime.Time).ToList();
                     showtimesOrderedByMovieTitleAndTime.Add(showtimesOfMovie);
-                    showtimesOfMovie = new List<Showtime>() { showtimes[i] };
+                    showtimesOfMovie = new List<Showtime>() { todaysShowtimes[i] };
                 }
             }
 

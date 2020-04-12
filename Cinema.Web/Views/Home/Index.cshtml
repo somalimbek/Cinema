@@ -8,14 +8,8 @@
     <h1 class="display-4">Campus Cinema</h1>
 </div>
 <div>
+    <h2>Legújabb filmjeink</h2>
     <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Legújabb filmjeink
-                </th>
-            </tr>
-        </thead>
         <tbody>
             <tr>
                 @foreach (var movie in Model.LatestMovies)
@@ -23,7 +17,9 @@
                     <td height="100%" width="20%">
                         @if (movie.Poster != null)
                         {
-                            <img src="@Url.Action("DisplayImage", "Home", new { id = movie.Id })" style="max-height: 100%; max-width: 100%"/>
+                            <a asp-action="Details" asp-route-movieId="@movie.Id">
+                                <img src="@Url.Action("DisplayImage", "Home", new { id = movie.Id })" style="max-height: 100%; max-width: 100%" />
+                            </a>
                         }
                     </td>
                 }
@@ -32,11 +28,15 @@
     </table>
 </div>
 <div>
+    <h2>Mai műsor</h2>
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    Mai műsor
+                    Film címe
+                </th>
+                <th colspan="3">
+                    Vetítési időpontok
                 </th>
             </tr>
         </thead>

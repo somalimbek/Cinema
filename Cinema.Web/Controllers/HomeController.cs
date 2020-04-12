@@ -27,6 +27,11 @@ namespace Cinema.Web.Controllers
             return View("Index", viewModel);
         }
 
+        public IActionResult Details(int movieId)
+        {
+            return RedirectToAction("Index", "Movie", new { id = movieId });
+        }
+
         public IActionResult DisplayImage(int id)
         {
             var movie = _service.GetMovie(id);
