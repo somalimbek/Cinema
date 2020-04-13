@@ -4,13 +4,15 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Foglalás</h1>
-<h2>@Model.Movie.Title</h2>
+<h1>Foglalás - @Model.Movie.Title</h1>
 
+<h2>Helyek kiválasztása</h2>
 <div class="table-responsive">
+    <button onClick="window.location.reload();">Törlés</button>
     <table class="table-bordered">
         <thead>
             <tr>
+                <th class="text-center">Sor</th>
                 <th class="text-center" colspan="@Model.Screen.SeatsPerRow">
                     Vászon
                 </th>
@@ -19,19 +21,35 @@
         <tbody>
             @for (int i = 0; i < Model.Screen.NumberOfRows; i++)
             {
+                var rowNumber = i + 1;
+                var rowString = rowNumber.ToString();
+                if (rowNumber < 10)
+                {
+                    rowString = "0" + rowString;
+                }
                 <tr>
+                    <th class="text-center">
+                        @rowNumber.
+                    </th>
                     @for (int j = 0; j < Model.Screen.SeatsPerRow; j++)
                     {
+                        var seatNumber = j + 1;
+                        var seatString = seatNumber.ToString();
+                        if (seatNumber < 10)
+                        {
+                            seatString = "0" + seatString;
+                        }
+                        var seatId = rowString + "-" + seatString;
                         @if (Model.Seats[i][j].Status == SeatStatus.Free)
                         {
                             <td>
-                                <button class="seat free"/>
+                                <button id="@seatId" class="seat free">@seatString</button>
                             </td>
                         }
                         else
                         {
                             <td>
-                                <button class="seat booked"/>
+                                <button class="seat booked">@seatString</button>
                             </td>
                         }
                     }
@@ -39,4 +57,54 @@
             }
         </tbody>
     </table>
+    <button onClick="window.location.reload();">Törlés</button>
 </div>
+
+<h2>Foglalási adatok</h2>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CustomerName" class="control-label">Név:</label>
+                <input asp-for="CustomerName" class="form-control" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerPhoneNumber" class="control-label">Telefonszám:</label>
+                <input asp-for="CustomerPhoneNumber" class="form-control" />
+                <span asp-validation-for="CustomerPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SeatsToBook" class="control-label">Foglalni kívánt székek:</label>
+                <input id="seatstobook" asp-for="SeatsToBook" class="form-control" readonly />
+                <span asp-validation-for="SeatsToBook" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Foglalás véglegesítése" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('button').click(function (event) {
+                var id = event.target.id;
+                var button = $('#' + id);
+                var seatstobook = $('#seatstobook')
+                if (button.hasClass('free') && seatstobook.val().length < 36) {
+                    button.removeClass('free');
+                    button.addClass('chosen');
+                    seatstobook.val(function () {
+                        return this.value + id + ' ';
+                    });
+                }
+            });
+        });
+    </script>
+}
