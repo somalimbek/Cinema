@@ -38,6 +38,11 @@ namespace Cinema.Web.Controllers
             return File(movie.Poster, "image/jpg");
         }
 
+        public IActionResult Book(int showtimeId)
+        {
+            return RedirectToAction("Index", "Booking", new { showtimeId = showtimeId });
+        }
+
         public IActionResult Privacy()
         {
             return View();

@@ -43,14 +43,19 @@
         <tbody>
             @foreach (var showtimes in Model.TodaysShowtimesByMovies)
             {
+                var movie = showtimes[0].Movie;
                 <tr>
                     <td>
-                        @showtimes[0].Movie.Title
+                        <a asp-action="Details" asp-route-movieId="@movie.Id">
+                            @movie.Title
+                        </a>
                     </td>
                     @foreach (var showtime in showtimes)
                     {
                         <td>
-                            @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
+                            <a asp-action="Book" asp-route-showtimeId="@showtime.Id">
+                                @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
+                            </a>
                         </td>
                     }
                 </tr>
