@@ -3,6 +3,13 @@
 
 @{
     ViewData["Title"] = "Index";
+
+    Func<DayOfWeek, string> localizeDayName = day =>
+    {
+        var localized = DateTimeFormatInfo.CurrentInfo.GetDayName(day).ToUpper().First().ToString();
+        localized += DateTimeFormatInfo.CurrentInfo.GetDayName(day).Substring(1);
+        return localized;
+    };
 }
 
 
@@ -47,27 +54,28 @@
                 <th>
                     Nap
                 </th>
-                <th colspan="3">
-                    Vetítési időpontok
+                <th class="text-center" colspan="3">
+                    Vászon
                 </th>
             </tr>
         </thead>
-        @foreach (var showtimesOnDay in Model.ShowtimesForMovie)
-        {
-            <tr>
-                <th class="nobr">
-                    @DateTimeFormatInfo.CurrentInfo.GetDayName(showtimesOnDay[0].Time.DayOfWeek).ToUpper().First()<!-- 
-                    -->@DateTimeFormatInfo.CurrentInfo.GetDayName(showtimesOnDay[0].Time.DayOfWeek).Substring(1)
-                </th>
-                @foreach (var showtime in showtimesOnDay)
-                {
-                    <td>
-                        <a asp-action="Book" asp-route-showtimeId="@showtime.Id">
-                            @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
-                        </a>
-                    </td>
-                }
-            </tr>
-        }
+        <tbody>
+            @foreach (var showtimesOnDay in Model.ShowtimesForMovie)
+            {
+                <tr>
+                    <th class="nobr">
+                        @localizeDayName(showtimesOnDay[0].Time.DayOfWeek)
+                    </th>
+                    @foreach (var showtime in showtimesOnDay)
+                    {
+                        <td>
+                            <a asp-action="Book" asp-route-showtimeId="@showtime.Id">
+                                @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
+                            </a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
     </table>
 </div>

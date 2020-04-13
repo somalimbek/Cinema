@@ -29,6 +29,59 @@ namespace Cinema.Web.Services
                 .ToList();
         }
 
+        public Movie GetMovie(int id)
+        {
+            return _context.Movies
+                .FirstOrDefault(movie => movie.Id == id);
+        }
+
+        public List<Movie> GetMovies(string title = null)
+        {
+            return _context.Movies
+                .Where(movie => movie.Title.Contains(title ?? ""))
+                .OrderBy(movie => movie.Title)
+                .ToList();
+        }
+
+        public List<List<Seat>> GetSeatsForShowtime(int showtimeId)
+        {
+            var seatsForShowtime = _context.Seats
+                .Include(seat => seat.Showtime)
+                .Where(seat => seat.Showtime.Id == showtimeId)
+                .OrderBy(seat => seat.RowNumber)
+                .ToList();
+
+            var seatsOrderedByRowAndSeatNumber = new List<List<Seat>>();
+            var seatsOfRow = new List<Seat>() { seatsForShowtime[0] };
+            for (int i = 1; i < seatsForShowtime.Count; i++)
+            {
+                if (seatsForShowtime[i].RowNumber == seatsForShowtime[i - 1].RowNumber && i != seatsForShowtime.Count - 1)
+                {
+                    seatsOfRow.Add(seatsForShowtime[i]);
+                }
+                else
+                {
+                    if (i == seatsForShowtime.Count - 1)
+                    {
+                        seatsOfRow.Add(seatsForShowtime[i]);
+                    }
+                    seatsOfRow = seatsOfRow.OrderBy(seat => seat.SeatNumber).ToList();
+                    seatsOrderedByRowAndSeatNumber.Add(seatsOfRow);
+                    seatsOfRow = new List<Seat>() { seatsForShowtime[i] };
+                }
+            }
+
+            return seatsOrderedByRowAndSeatNumber;
+        }
+
+        public Showtime GetShowtime(int id)
+        {
+            return _context.Showtimes
+                .Include(showtime => showtime.Movie)
+                .Include(showtime => showtime.Screen)
+                .FirstOrDefault(showtime => showtime.Id == id);
+        }
+
         public List<List<Showtime>> GetShowtimesForMovie(int movieId)
         {
             var showtimesForMovie = _context.Showtimes
@@ -38,7 +91,7 @@ namespace Cinema.Web.Services
                 .OrderBy(showtime => showtime.Time)
                 .ToList();
 
-            var showtimesOrderedByDays = new List<List<Showtime>>();
+            var showtimesOrderedByDaysAndTime = new List<List<Showtime>>();
             var showtimesOfDay = new List<Showtime>() { showtimesForMovie[0] };
             for (int i = 1; i < showtimesForMovie.Count; i++)
             {
@@ -53,12 +106,12 @@ namespace Cinema.Web.Services
                         showtimesOfDay.Add(showtimesForMovie[i]);
                     }
                     showtimesOfDay = showtimesOfDay.OrderBy(showtime => showtime.Time).ToList();
-                    showtimesOrderedByDays.Add(showtimesOfDay);
+                    showtimesOrderedByDaysAndTime.Add(showtimesOfDay);
                     showtimesOfDay = new List<Showtime>() { showtimesForMovie[i] };
                 }
             }
 
-            return showtimesOrderedByDays;
+            return showtimesOrderedByDaysAndTime;
         }
 
         public List<List<Showtime>> GetTodaysShowtimesByMovies()
@@ -91,20 +144,6 @@ namespace Cinema.Web.Services
             }
 
             return showtimesOrderedByMovieTitleAndTime;
-        }
-
-        public Movie GetMovie(int id)
-        {
-            return _context.Movies
-                .FirstOrDefault(movie => movie.Id == id);
-        }
-
-        public List<Movie> GetMovies(string title = null)
-        {
-            return _context.Movies
-                .Where(movie => movie.Title.Contains(title ?? ""))
-                .OrderBy(movie => movie.Title)
-                .ToList();
         }
 
         #endregion

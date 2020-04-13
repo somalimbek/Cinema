@@ -72,4 +72,17 @@ body {
 
 /* Custom additions
 -------------------------------------------------- */
-
+button.seat {
+    width: 30px;
+    height: 30px;
+    border: none;
+}
+button.free {
+    background-color: limegreen;
+}
+button.booked {
+    background-color: orangered;
+}
+button.chosen {
+    background-color: yellow;
+}

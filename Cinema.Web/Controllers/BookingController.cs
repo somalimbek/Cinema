@@ -21,7 +21,12 @@ namespace Cinema.Web.Controllers
 
         public IActionResult Index(int showtimeId)
         {
-            return View();
+            var viewModel = new BookingViewModel();
+            viewModel.Seats = _service.GetSeatsForShowtime(showtimeId);
+            viewModel.Showtime = _service.GetShowtime(showtimeId);
+            viewModel.Movie = viewModel.Showtime.Movie;
+            viewModel.Screen = viewModel.Showtime.Screen;
+            return View(viewModel);
         }
     }
 }
