@@ -43,6 +43,13 @@ namespace Cinema.Web.Services
                 .ToList();
         }
 
+        public Seat GetSeat(int id)
+        {
+            var seat = _context.Seats
+                .FirstOrDefault(seat => seat.Id == id);
+            return seat;
+        }
+
         public List<List<Seat>> GetSeatsForShowtime(int showtimeId)
         {
             var seatsForShowtime = _context.Seats
@@ -149,6 +156,31 @@ namespace Cinema.Web.Services
         #endregion
 
         #region Update
+
+        public bool SaveBooking(List<Seat> seatsToBook)
+        {
+            var successful = true;
+            foreach (var seatToBook in seatsToBook)
+            {
+                var seatInDatabase = GetSeat(seatToBook.Id);
+                if (successful && seatInDatabase.Status == SeatStatus.Free)
+                {
+                    _context.Entry(seatInDatabase).CurrentValues.SetValues(seatToBook);
+                    successful = true;
+                }
+                else
+                {
+                    successful = false;
+                }
+            }
+            if (successful)
+            {
+                _context.SaveChanges();
+            }
+
+            return successful;
+        }
+
         #endregion
 
         #region Delete

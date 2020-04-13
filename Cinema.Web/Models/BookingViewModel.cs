@@ -8,6 +8,8 @@ namespace Cinema.Web.Models
 {
     public class BookingViewModel
     {
+        public string ErrorMessage { get; set; }
+
         public List<List<Seat>> Seats { get; set; }
 
         public Showtime Showtime { get; set; }

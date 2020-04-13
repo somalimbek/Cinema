@@ -1,0 +1,36 @@
+﻿@using System.Globalization
+@model Showtime
+@{
+    ViewData["Title"] = "Result";
+}
+<h1>Sikeres foglalás!</h1>
+
+<div>
+    <table class="table-borderless">
+        <tbody>
+            <tr>
+                <th>Film címe:</th>
+                <td>@Model.Movie.Title</td>
+            </tr>
+            <tr>
+                <th>Időpont:</th>
+                <td>@Model.Time.Date.ToString().Substring(0, 18)</td>
+            </tr>
+            <tr>
+                <th>Helyszín:</th>
+                <td>
+                    1117 Budapest, Pázmány Péter sétány 1/C
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="font-italic">
+                    A foglalásokat az előadás kezdete előtt 30 perccel töröljük. Kérjük érkezzenek időben, hogy a foglalást zavartalanul átvehessék. Köszönjük!
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="Index" asp-controller="Home">Vissza a kezdőlapra</a>
+</div>
