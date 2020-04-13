@@ -43,7 +43,7 @@ namespace Cinema.Web.Controllers
             return RedirectToAction("Index", "Booking", new { showtimeId = showtimeId });
         }
 
-        public IActionResult Privacy()
+        public IActionResult Contact()
         {
             return View();
         }
