@@ -55,26 +55,38 @@
                     Nap
                 </th>
                 <th class="text-center" colspan="3">
-                    Vászon
+                    Vetítési időpontok
                 </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var showtimesOnDay in Model.ShowtimesForMovie)
             {
-                <tr>
-                    <th class="nobr">
-                        @localizeDayName(showtimesOnDay[0].Time.DayOfWeek)
-                    </th>
-                    @foreach (var showtime in showtimesOnDay)
-                    {
-                        <td>
-                            <a asp-action="Book" asp-route-showtimeId="@showtime.Id">
-                                @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
-                            </a>
-                        </td>
-                    }
-                </tr>
+                var date = showtimesOnDay[0].Time;
+                if (date >= DateTime.Today)
+                {
+                    <tr>
+                        @if (date.Date == DateTime.Today.Date)
+                        {
+                            <th>Ma</th>
+                        }
+                        else
+                        {
+                            <th>@localizeDayName(date.DayOfWeek)</th>
+                        }
+                        @foreach (var showtime in showtimesOnDay)
+                        {
+                            if (showtime.Time > DateTime.Now.AddHours(1))
+                            {
+                                <td>
+                                    <a asp-action="Book" asp-route-showtimeId="@showtime.Id">
+                                        @showtime.Time.TimeOfDay.ToString().Substring(0, 5)
+                                    </a>
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
             }
         </tbody>
     </table>
