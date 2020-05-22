@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Cinema.Web.Models;
-using Cinema.Web.Services;
+using Cinema.Persistence.Services;
+using Cinema.Persistence;
 
 namespace Cinema.Web.Controllers
 {

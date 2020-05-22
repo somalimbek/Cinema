@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Cinema.Web.Models
+namespace Cinema.Persistence
 {
     public static class DbInitializer
     {
@@ -102,7 +102,7 @@ namespace Cinema.Web.Models
                     Title = "Kutyák szigete",
                     Director = "Guillermo Del Toro",
                     Cast = "Bryan Cranston, Edward Norton, Bill Murray",
-                    Storyline = "A KUTYÁK SZIGETE hőse Atari Kobajasi, a korrupt Kobajasi polgármester 12 éves nevelt fia. Mikor egy rendelet értelmében Megaszaki összes kutyáját egy széles kiterjedésű, hulladéklerakóként használt szigetre száműzik, Atari egymaga indul apró repülőjén a Szemét-szigetre, hogy felkutassa testőrkutyáját. Ott egy falka új barát segítségével belevág nagy kalandjába, ami megváltoztatja az egész város jövőjét.", 
+                    Storyline = "A KUTYÁK SZIGETE hőse Atari Kobajasi, a korrupt Kobajasi polgármester 12 éves nevelt fia. Mikor egy rendelet értelmében Megaszaki összes kutyáját egy széles kiterjedésű, hulladéklerakóként használt szigetre száműzik, Atari egymaga indul apró repülőjén a Szemét-szigetre, hogy felkutassa testőrkutyáját. Ott egy falka új barát segítségével belevág nagy kalandjába, ami megváltoztatja az egész város jövőjét.",
                     Runtime = 101,
                     Poster = File.Exists(isleOfDogsPosterHun) ? File.ReadAllBytes(isleOfDogsPosterHun) : null,
                     Added = new DateTime(2018, 5, 3)

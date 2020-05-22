@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Cinema.Web.Models;
-using Cinema.Web.Services;
+using Cinema.Persistence.Services;
 
 namespace Cinema.Web.Controllers
 {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.Web.Models;
-using Cinema.Web.Services;
+using Cinema.Persistence.Services;
 
 namespace Cinema.Web.Controllers
 {
