@@ -5,23 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200328184350_ExtendedMaxLengthsForMovieFields.cs" />
-    <Compile Remove="Migrations\20200328184350_ExtendedMaxLengthsForMovieFields.Designer.cs" />
-    <Compile Remove="Migrations\20200328184420_ExtendedMaxLengthsForMovieFields.cs" />
-    <Compile Remove="Migrations\20200328184420_ExtendedMaxLengthsForMovieFields.Designer.cs" />
-    <Compile Remove="Migrations\20200328184512_ExtendedMaxLengthsForMovieFields.cs" />
-    <Compile Remove="Migrations\20200328184512_ExtendedMaxLengthsForMovieFields.Designer.cs" />
-    <Compile Remove="Migrations\20200523161947_Authentication.cs" />
-    <Compile Remove="Migrations\20200523161947_Authentication.Designer.cs" />
-    <Compile Remove="Migrations\20200523163612_Sqlite.cs" />
-    <Compile Remove="Migrations\20200523163612_Sqlite.Designer.cs" />
-    <Compile Remove="Migrations\20200523163911_Sqlite.cs" />
-    <Compile Remove="Migrations\20200523163911_Sqlite.Designer.cs" />
-    <Compile Remove="Migrations\20200523174846_Sqlite.cs" />
-    <Compile Remove="Migrations\20200523174846_Sqlite.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="CinemaCore3.db" />
   </ItemGroup>
 
@@ -38,6 +21,10 @@
 
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cinema.Persistence\Cinema.Persistence.csproj" />
   </ItemGroup>
 
 

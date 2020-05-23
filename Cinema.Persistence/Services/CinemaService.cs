@@ -1,11 +1,9 @@
-﻿using Cinema.Web.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace Cinema.Web.Services
+namespace Cinema.Persistence.Services
 {
     public class CinemaService
     {
