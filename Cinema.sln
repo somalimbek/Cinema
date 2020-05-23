@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cinema.Web", "Cinema.Web\Cinema.Web.csproj", "{FAE306AD-109E-4144-A3CE-5A6CA30080C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinema.Persistence", "Cinema.Persistence\Cinema.Persistence.csproj", "{DC082228-FFD0-49ED-BA97-4FE0B89878EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cinema.Persistence", "Cinema.Persistence\Cinema.Persistence.csproj", "{DC082228-FFD0-49ED-BA97-4FE0B89878EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinema.WebApi", "Cinema.WebApi\Cinema.WebApi.csproj", "{EB445BF1-19B3-4AC9-ABA2-05581343294D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DC082228-FFD0-49ED-BA97-4FE0B89878EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC082228-FFD0-49ED-BA97-4FE0B89878EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC082228-FFD0-49ED-BA97-4FE0B89878EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB445BF1-19B3-4AC9-ABA2-05581343294D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB445BF1-19B3-4AC9-ABA2-05581343294D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB445BF1-19B3-4AC9-ABA2-05581343294D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB445BF1-19B3-4AC9-ABA2-05581343294D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
