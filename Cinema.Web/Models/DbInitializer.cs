@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,20 @@ namespace Cinema.Web.Models
 
         public static void Initialize(IServiceProvider serviceProvider, string imageDirectory)
         {
-            CinemaContext _context = serviceProvider.GetRequiredService<CinemaContext>();
+            CinemaContext context = serviceProvider.GetRequiredService<CinemaContext>();
+            UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             //context.Database.EnsureCreated();
-            _context.Database.Migrate();
+            context.Database.Migrate();
 
-            if (_context.Movies.Any())
+            if (context.Movies.Any())
             {
                 return;
             }
+
+            userManager.CreateAsync(new ApplicationUser{ UserName = "admin" }, "admin");
+            userManager.CreateAsync(new ApplicationUser{ UserName = "soma" }, "soma");
+            userManager.CreateAsync(new ApplicationUser{ UserName = "asdf" }, "asdf");
 
             #region Movies
 
@@ -129,7 +135,7 @@ namespace Cinema.Web.Models
                 }
             };
 
-            movies.ForEach(movie => _context.Movies.Add(movie));
+            movies.ForEach(movie => context.Movies.Add(movie));
 
             #endregion
 
@@ -193,7 +199,7 @@ namespace Cinema.Web.Models
                 }
             };
 
-            screens.ForEach(screen => _context.Screens.Add(screen));
+            screens.ForEach(screen => context.Screens.Add(screen));
 
             #endregion
 
@@ -206,7 +212,7 @@ namespace Cinema.Web.Models
                 showtimes.AddRange(CreateShowtimes(movies[i], screens[i]));
             }
 
-            showtimes.ForEach(showtime => _context.Showtimes.Add(showtime));
+            showtimes.ForEach(showtime => context.Showtimes.Add(showtime));
 
             #endregion
 
@@ -231,7 +237,7 @@ namespace Cinema.Web.Models
                 }
             }
 
-            seats.ForEach(seat => _context.Seats.Add(seat));
+            seats.ForEach(seat => context.Seats.Add(seat));
 
             #endregion
 
@@ -239,7 +245,7 @@ namespace Cinema.Web.Models
 
             #endregion
 
-            _context.SaveChanges();
+            context.SaveChanges();
         }
 
         private static List<Showtime> CreateShowtimes(Movie movie, Screen screen)
