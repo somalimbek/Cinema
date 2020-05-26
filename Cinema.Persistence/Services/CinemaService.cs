@@ -19,6 +19,17 @@ namespace Cinema.Persistence.Services
 
         #region Read
 
+        public List<Showtime> GetFutureShowtimesForMovie(int movieId)
+        {
+            return _context.Showtimes
+                .Include(showtime => showtime.Movie)
+                .Include(showtime => showtime.Screen)
+                .Where(showtime => showtime.Movie.Id == movieId)
+                .Where(showtime => showtime.Time > DateTime.Now)
+                .OrderBy(showtime => showtime.Time)
+                .ToList();
+        }
+
         public List<Movie> GetLatestMovies(int count = 5)
         {
             return _context.Movies
