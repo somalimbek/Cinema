@@ -59,6 +59,37 @@ namespace Cinema.Persistence.Services
             return seat;
         }
 
+        public List<Seat> GetSeatsListForShowtime(int showtimeId)
+        {
+            var seatsForShowtime = _context.Seats
+                .Include(seat => seat.Showtime)
+                .Where(seat => seat.Showtime.Id == showtimeId)
+                .OrderBy(seat => seat.RowNumber)
+                .ToList();
+
+            var seatsOrderedByRowAndSeatNumber = new List<Seat>();
+            var seatsOfRow = new List<Seat>() { seatsForShowtime[0] };
+            for (int i = 1; i < seatsForShowtime.Count; i++)
+            {
+                if (seatsForShowtime[i].RowNumber == seatsForShowtime[i - 1].RowNumber && i != seatsForShowtime.Count - 1)
+                {
+                    seatsOfRow.Add(seatsForShowtime[i]);
+                }
+                else
+                {
+                    if (i == seatsForShowtime.Count - 1)
+                    {
+                        seatsOfRow.Add(seatsForShowtime[i]);
+                    }
+                    seatsOfRow = seatsOfRow.OrderBy(seat => seat.SeatNumber).ToList();
+                    seatsOrderedByRowAndSeatNumber.AddRange(seatsOfRow);
+                    seatsOfRow = new List<Seat>() { seatsForShowtime[i] };
+                }
+            }
+
+            return seatsOrderedByRowAndSeatNumber;
+        }
+
         public List<List<Seat>> GetSeatsForShowtime(int showtimeId)
         {
             var seatsForShowtime = _context.Seats

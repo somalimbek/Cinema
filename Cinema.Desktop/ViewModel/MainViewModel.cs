@@ -1,4 +1,5 @@
 ﻿using Cinema.Desktop.Model;
+using Cinema.Persistence;
 using Cinema.Persistence.DTO;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,12 @@ namespace Cinema.Desktop.ViewModel
     {
         private ObservableCollection<MovieDto> _movies;
         private ObservableCollection<ShowtimeDto> _showtimes;
+        private ObservableCollection<SeatDto> _seats;
         private readonly CinemaApiService _service;
+
+        private string _screenName = "Screen: ";
+        private int _numberOfRows;
+        private int _seatsPerRow;
 
         public ObservableCollection<MovieDto> Movies
         {
@@ -34,7 +40,49 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
-        public DelegateCommand SelectCommand { get; private set; }
+        public ObservableCollection<SeatDto> Seats
+        {
+            get => _seats;
+            set
+            {
+                _seats = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ScreenName
+        {
+            get => _screenName;
+            set
+            {
+                _screenName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int NumberOfRows
+        {
+            get => _numberOfRows;
+            set
+            {
+                _numberOfRows = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int SeatsPerRow
+        {
+            get => _seatsPerRow;
+            set
+            {
+                _seatsPerRow = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DelegateCommand SelectMovieCommand { get; private set; }
+
+        public DelegateCommand SelectShowtimeCommand { get; private set; }
 
         public DelegateCommand RefreshMoviesCommand { get; private set; }
 
@@ -43,7 +91,8 @@ namespace Cinema.Desktop.ViewModel
             _service = service;
 
             RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
-            SelectCommand = new DelegateCommand(param => LoadShowtimesAsync(param as MovieDto));
+            SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(param as MovieDto));
+            SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeDto));
         }
 
         public async void LoadMoviesAsync()
@@ -65,6 +114,33 @@ namespace Cinema.Desktop.ViewModel
             try
             {
                 Showtimes = new ObservableCollection<ShowtimeDto>(await _service.LoadShowtimesAsync(movie.Id));
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+            }
+        }
+
+        public async void LoadSeatsAsync(ShowtimeDto showtime)
+        {
+            if (showtime is null)
+                return;
+
+            try
+            {
+                var screen = await _service.LoadScreenAsync(showtime.Id);
+                ScreenName = "Screen: " + screen.Name;
+                NumberOfRows = screen.NumberOfRows;
+                SeatsPerRow = screen.SeatsPerRow;
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+            }
+
+            try
+            {
+                Seats = new ObservableCollection<SeatDto>(await _service.LoadSeatsAsync(showtime.Id));
             }
             catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
             {

@@ -1,4 +1,5 @@
-﻿using Cinema.Persistence.DTO;
+﻿using Cinema.Persistence;
+using Cinema.Persistence.DTO;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,32 @@ namespace Cinema.Desktop.Model
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<IEnumerable<ShowtimeDto>>();
+            }
+
+            throw new NetworkException("Service returned response: " + response.StatusCode);
+        }
+
+        public async Task<ScreenDto> LoadScreenAsync(int showtimeId)
+        {
+            var response = await _client.GetAsync(
+                QueryHelpers.AddQueryString("api/Screens/", "showtimeId", showtimeId.ToString()));
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<ScreenDto>();
+            }
+
+            throw new NetworkException("Service returned response: " + response.StatusCode);
+        }
+
+        public async Task<IEnumerable<SeatDto>> LoadSeatsAsync(int showtimeId)
+        {
+            var response = await _client.GetAsync(
+                QueryHelpers.AddQueryString("api/Seats/", "showtimeId", showtimeId.ToString()));
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<IEnumerable<SeatDto>>();
             }
 
             throw new NetworkException("Service returned response: " + response.StatusCode);

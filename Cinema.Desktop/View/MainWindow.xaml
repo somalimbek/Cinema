@@ -6,7 +6,14 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:Cinema.Desktop.View"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="MainWindow" Height="700" Width="1200">
+    <Window.Resources>
+        <Style x:Key="MyBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+    </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{Binding RefreshMoviesCommand}" />
@@ -17,44 +24,98 @@
             <MenuItem Header="_Refresh movies" Command="{Binding RefreshMoviesCommand}" />
         </Menu>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="3*" />
-            </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Row="0">
+                    <GroupBox.Header>
+                        <Label Content="Movies:" />
+                    </GroupBox.Header>
+                    <DataGrid ItemsSource="{Binding Movies}"
+                            VerticalContentAlignment="Stretch"  IsReadOnly="True"
+                            AutoGenerateColumns="False" HeadersVisibility="None">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction
+                                    Command="{Binding SelectMovieCommand}"
+                                    CommandParameter="{
+                                        Binding Path=SelectedItem,
+                                        RelativeSource={
+                                            RelativeSource
+                                            AncestorType={x:Type DataGrid},
+                                            AncestorLevel=1}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Title}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+                <GroupBox Grid.Row="1">
+                    <GroupBox.Header>
+                        <Label Content="Showtimes:" />
+                    </GroupBox.Header>
+                    <DataGrid ItemsSource="{Binding Showtimes}"
+                            VerticalContentAlignment="Stretch"  IsReadOnly="True"
+                            AutoGenerateColumns="False" HeadersVisibility="None">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction
+                                    Command="{Binding SelectShowtimeCommand}"
+                                    CommandParameter="{
+                                        Binding Path=SelectedItem,
+                                        RelativeSource={
+                                            RelativeSource
+                                            AncestorType={x:Type DataGrid},
+                                            AncestorLevel=1}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Time}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </Grid>
+            <GroupBox Grid.Column="1">
                 <GroupBox.Header>
-                    <Label Content="Movies:" />
+                    <Label Content="{Binding ScreenName}" />
                 </GroupBox.Header>
-                <DataGrid ItemsSource="{Binding Movies}"
-                      VerticalContentAlignment="Stretch"  IsReadOnly="True"
-                      AutoGenerateColumns="False" HeadersVisibility="None">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction
-                                Command="{Binding SelectCommand}"
-                                CommandParameter="{
-                                    Binding Path=SelectedItem,
-                                    RelativeSource={
-                                        RelativeSource
-                                        AncestorType={x:Type DataGrid},
-                                        AncestorLevel=1}}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Title}" Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
-            <GroupBox Grid.Row="1">
-                <GroupBox.Header>
-                    <Label Content="Showtimes:" />
-                </GroupBox.Header>
-                <DataGrid VerticalContentAlignment="Stretch" ItemsSource="{Binding Showtimes}" IsReadOnly="True"
-                      AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Time" Binding="{Binding Time}" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding Seats}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding NumberOfRows}" Columns="{Binding SeatsPerRow}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource MyBorderStyle}">
+                                <Label Content="{Binding SeatNumber}">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Free">
+                                                    <Setter Property="Background" Value="Green" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Booked">
+                                                    <Setter Property="Background" Value="Yellow" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Sold">
+                                                    <Setter Property="Background" Value="Red" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </GroupBox>
         </Grid>
     </DockPanel>
