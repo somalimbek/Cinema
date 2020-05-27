@@ -14,7 +14,10 @@
     </i:Interaction.Triggers>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Refresh movies" Command="{Binding RefreshMoviesCommand}" />
+            <MenuItem Header="_File">
+                <MenuItem Header="_Refresh movies" Command="{Binding RefreshMoviesCommand}" />
+                <MenuItem Header="_Logout" Command="{Binding LogoutCommand}" />
+            </MenuItem>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>

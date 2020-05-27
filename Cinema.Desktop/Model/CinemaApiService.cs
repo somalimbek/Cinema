@@ -3,6 +3,7 @@ using Cinema.Persistence.DTO;
 using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,42 @@ namespace Cinema.Desktop.Model
                 BaseAddress = new Uri(baseAddress)
             };
         }
+
+        public async Task<bool> LoginAsync(string name, string password)
+        {
+            LoginDto user = new LoginDto
+            {
+                UserName = name,
+                Password = password
+            };
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/Account/Login", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return false;
+            }
+
+            throw new NetworkException("Service returned response: " + response.StatusCode);
+        }
+
+        public async Task LogoutAsync()
+        {
+            HttpResponseMessage response = await _client.PostAsync("api/Account/Logout", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return;
+            }
+
+            throw new NetworkException("Service returned response: " + response.StatusCode);
+        }
+
 
         public async Task<IEnumerable<MovieDto>> LoadMoviesAsync()
         {

@@ -12,12 +12,14 @@ namespace Cinema.Desktop.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        private const string _screenLabel = "Screen: ";
+
         private ObservableCollection<MovieDto> _movies;
         private ObservableCollection<ShowtimeDto> _showtimes;
         private ObservableCollection<SeatViewModel> _seats;
         private readonly CinemaApiService _service;
 
-        private string _screenName = "Screen:";
+        private string _screenName = _screenLabel;
         private int _numberOfRows;
         private int _seatsPerRow;
 
@@ -89,15 +91,38 @@ namespace Cinema.Desktop.ViewModel
 
         public DelegateCommand RefreshMoviesCommand { get; private set; }
 
+        public DelegateCommand LogoutCommand { get; private set; }
+
+        public event EventHandler LogoutSucceeded;
+
         public MainViewModel(CinemaApiService service)
         {
             _selectedSeats = new HashSet<SeatViewModel>();
 
             _service = service;
 
+            LogoutCommand = new DelegateCommand(_ => LogoutAsync());
             RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
             SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(param as MovieDto));
             SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeDto));
+        }
+
+        private async void LogoutAsync()
+        {
+            try
+            {
+                await _service.LogoutAsync();
+                OnLogoutSuccess();
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+            }
+        }
+
+        private void OnLogoutSuccess()
+        {
+            LogoutSucceeded?.Invoke(this, EventArgs.Empty);
         }
 
         public async void LoadMoviesAsync()
@@ -114,8 +139,13 @@ namespace Cinema.Desktop.ViewModel
 
         public async void LoadShowtimesAsync(MovieDto movie)
         {
-            if (movie is null)
+            if (movie is null || movie.Id == 0)
+            {
+                Showtimes = null;
+                Seats = null;
+                ScreenName = _screenLabel;
                 return;
+            }
             try
             {
                 Showtimes = new ObservableCollection<ShowtimeDto>(await _service.LoadShowtimesAsync(movie.Id));
@@ -128,13 +158,16 @@ namespace Cinema.Desktop.ViewModel
 
         public async void LoadSeatsAsync(ShowtimeDto showtime)
         {
-            if (showtime is null)
+            if (showtime is null || showtime.Id == 0)
+            {
+                Seats = null;
+                ScreenName = _screenLabel;
                 return;
-
+            }
             try
             {
                 var screen = await _service.LoadScreenAsync(showtime.Id);
-                ScreenName = "Screen: " + screen.Name;
+                ScreenName = _screenLabel + screen.Name;
                 NumberOfRows = screen.NumberOfRows;
                 SeatsPerRow = screen.SeatsPerRow;
             }
