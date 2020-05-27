@@ -51,8 +51,8 @@ namespace Cinema.WebApi
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             })
-                .AddEntityFrameworkStores<CinemaContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<CinemaContext>()
+            .AddDefaultTokenProviders();
 
             services.AddTransient<CinemaService>();
 
@@ -68,6 +68,8 @@ namespace Cinema.WebApi
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

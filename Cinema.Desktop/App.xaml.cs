@@ -46,6 +46,7 @@ namespace Cinema.Desktop
             };
 
             _mainViewModel = new MainViewModel(_service);
+            _mainViewModel.LogoutSucceeded += ViewModel_LogoutSucceeded;
             _mainViewModel.MessageApplication += ViewModel_MessageApplication;
             _mainViewModel.StartingMovieEdit += ViewModel_StartingMovieEdit;
             _mainViewModel.FinishingMovieEdit += ViewModel_FinishingMovieEdit;
