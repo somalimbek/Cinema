@@ -22,6 +22,8 @@ namespace Cinema.Desktop.Model
             };
         }
 
+        #region Authentication
+
         public async Task<bool> LoginAsync(string name, string password)
         {
             LoginDto user = new LoginDto
@@ -57,6 +59,9 @@ namespace Cinema.Desktop.Model
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
 
+        #endregion
+
+        #region Movie
 
         public async Task<IEnumerable<MovieDto>> LoadMoviesAsync()
         {
@@ -69,6 +74,21 @@ namespace Cinema.Desktop.Model
 
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
+
+        public async Task CreateMovieAsync(MovieDto movie)
+        {
+            var response = await _client.PostAsJsonAsync("api/movies/", movie);
+            movie.Id = (await response.Content.ReadAsAsync<MovieDto>()).Id;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NetworkException("Service returned response: " + response.StatusCode);
+            }
+        }
+
+        #endregion
+
+        #region Showtimes
 
         public async Task<IEnumerable<ShowtimeDto>> LoadShowtimesAsync(int movieId)
         {
@@ -83,6 +103,10 @@ namespace Cinema.Desktop.Model
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
 
+        #endregion
+
+        #region Screens
+
         public async Task<ScreenDto> LoadScreenAsync(int showtimeId)
         {
             var response = await _client.GetAsync(
@@ -96,6 +120,10 @@ namespace Cinema.Desktop.Model
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
 
+        #endregion
+
+        #region Seats
+
         public async Task<IEnumerable<SeatDto>> LoadSeatsAsync(int showtimeId)
         {
             var response = await _client.GetAsync(
@@ -108,5 +136,7 @@ namespace Cinema.Desktop.Model
 
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
+
+        #endregion
     }
 }

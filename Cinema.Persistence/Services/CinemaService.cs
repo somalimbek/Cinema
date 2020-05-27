@@ -15,6 +15,22 @@ namespace Cinema.Persistence.Services
         }
 
         #region Create
+
+        public Movie CreateMovie(Movie movie)
+        {
+            try
+            {
+                _context.Add(movie);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                return null;
+            }
+
+            return movie;
+        }
+
         #endregion
 
         #region Read
