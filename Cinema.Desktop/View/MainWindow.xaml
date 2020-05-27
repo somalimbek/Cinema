@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:Cinema.Desktop.View"
+        xmlns:viewModel="clr-namespace:Cinema.Desktop.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200">
+    <Window.Resources>
+        <viewModel:SelectedMovieConverter x:Key="selectMovieConverter" />
+    </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{Binding RefreshMoviesCommand}" />
@@ -15,6 +19,9 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
+                <MenuItem Header="_New">
+                    <MenuItem Header="_Movie" Command="{Binding AddMovieCommand}" />
+                </MenuItem>
                 <MenuItem Header="_Refresh movies" Command="{Binding RefreshMoviesCommand}" />
                 <MenuItem Header="_Logout" Command="{Binding LogoutCommand}" />
             </MenuItem>
@@ -26,16 +33,18 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
                     <RowDefinition Height="3*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <GroupBox Grid.Row="0">
                     <GroupBox.Header>
                         <Label Content="Movies:" />
                     </GroupBox.Header>
                     <DataGrid ItemsSource="{Binding Movies}"
-                            VerticalContentAlignment="Stretch"  IsReadOnly="True"
-                            AutoGenerateColumns="False" HeadersVisibility="None">
+                              SelectedItem="{Binding SelectedMovie}"
+                              IsReadOnly="True" AutoGenerateColumns="False"
+                              VerticalContentAlignment="Stretch" SelectionMode="Single"
+                              HeadersVisibility="None">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
                                 <i:InvokeCommandAction

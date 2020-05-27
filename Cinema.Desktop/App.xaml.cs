@@ -1,10 +1,12 @@
 ﻿using Cinema.Desktop.Model;
 using Cinema.Desktop.View;
 using Cinema.Desktop.ViewModel;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +23,7 @@ namespace Cinema.Desktop
         private LoginViewModel _loginViewModel;
         private MainWindow _mainView;
         private LoginWindow _loginView;
+        private MovieEditorWindow _movieEditorView;
 
         public App()
         {
@@ -44,6 +47,9 @@ namespace Cinema.Desktop
 
             _mainViewModel = new MainViewModel(_service);
             _mainViewModel.MessageApplication += ViewModel_MessageApplication;
+            _mainViewModel.StartingMovieEdit += ViewModel_StartingMovieEdit;
+            _mainViewModel.FinishingMovieEdit += ViewModel_FinishingMovieEdit;
+            _mainViewModel.StartingImageChange += ViewModel_StartingImageChange;
 
             _mainView = new MainWindow
             {
@@ -75,5 +81,36 @@ namespace Cinema.Desktop
             MessageBox.Show(e.Message, "Cinema", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
 
+        private void ViewModel_StartingMovieEdit(object sender, EventArgs e)
+        {
+            _movieEditorView = new MovieEditorWindow
+            {
+                DataContext = _mainViewModel
+            };
+            _movieEditorView.ShowDialog();
+        }
+
+        private void ViewModel_FinishingMovieEdit(object sender, EventArgs e)
+        {
+            if (_movieEditorView.IsActive)
+            {
+                _movieEditorView.Close();
+            }
+        }
+
+        private async void ViewModel_StartingImageChange(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                CheckFileExists = true,
+                Filter = "Images|*.jpg;*.jpeg;*.bmp;*.tif;*.gif;*.png;",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+            };
+
+            if (dialog.ShowDialog(_movieEditorView).GetValueOrDefault(false))
+            {
+                _mainViewModel.SelectedMovie.Poster = await File.ReadAllBytesAsync(dialog.FileName);
+            }
+        }
     }
 }

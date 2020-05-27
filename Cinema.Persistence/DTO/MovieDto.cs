@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Cinema.Persistence.DTO
@@ -8,14 +9,21 @@ namespace Cinema.Persistence.DTO
     {
         public int Id { get; set; }
 
+        [Required]
+        [MaxLength(100)]
         public string Title { get; set; }
 
+        [Required]
+        [MaxLength(50)]
         public string Director { get; set; }
 
+        [Required]
         public string Cast { get; set; }
 
+        [Required]
         public string Storyline { get; set; }
 
+        [Required]
         public int Runtime { get; set; }
 
         public byte[] Poster { get; set; }

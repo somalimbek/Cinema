@@ -14,10 +14,12 @@ namespace Cinema.Desktop.ViewModel
     {
         private const string _screenLabel = "Screen: ";
 
-        private ObservableCollection<MovieDto> _movies;
+        private readonly CinemaApiService _service;
+        private ObservableCollection<MovieViewModel> _movies;
         private ObservableCollection<ShowtimeDto> _showtimes;
         private ObservableCollection<SeatViewModel> _seats;
-        private readonly CinemaApiService _service;
+
+        private MovieViewModel _selectedMovie;
 
         private string _screenName = _screenLabel;
         private int _numberOfRows;
@@ -25,12 +27,22 @@ namespace Cinema.Desktop.ViewModel
 
         private HashSet<SeatViewModel> _selectedSeats;
 
-        public ObservableCollection<MovieDto> Movies
+        public ObservableCollection<MovieViewModel> Movies
         {
             get => _movies;
             set
             {
                 _movies = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MovieViewModel SelectedMovie
+        {
+            get => _selectedMovie;
+            set
+            {
+                _selectedMovie = value;
                 OnPropertyChanged();
             }
         }
@@ -89,11 +101,25 @@ namespace Cinema.Desktop.ViewModel
 
         public DelegateCommand SelectShowtimeCommand { get; private set; }
 
+        public DelegateCommand AddMovieCommand { get; private set; }
+
+        public DelegateCommand SaveMovieEditCommand { get; private set; }
+
+        public DelegateCommand CancelMovieEditCommand { get; private set; }
+
+        public DelegateCommand ChangeImageCommand { get; private set; }
+
         public DelegateCommand RefreshMoviesCommand { get; private set; }
 
         public DelegateCommand LogoutCommand { get; private set; }
 
         public event EventHandler LogoutSucceeded;
+
+        public event EventHandler StartingMovieEdit;
+
+        public event EventHandler FinishingMovieEdit;
+
+        public event EventHandler StartingImageChange;
 
         public MainViewModel(CinemaApiService service)
         {
@@ -101,11 +127,26 @@ namespace Cinema.Desktop.ViewModel
 
             _service = service;
 
-            LogoutCommand = new DelegateCommand(_ => LogoutAsync());
-            RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
-            SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(param as MovieDto));
+            SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(SelectedMovie));
             SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeDto));
+
+            AddMovieCommand = new DelegateCommand(_ => AddMovie());
+            SaveMovieEditCommand = new DelegateCommand(
+                _ => string.IsNullOrEmpty(SelectedMovie?[nameof(MovieViewModel.Title)])
+                && string.IsNullOrEmpty(SelectedMovie?[nameof(MovieViewModel.Director)])
+                && string.IsNullOrEmpty(SelectedMovie?[nameof(MovieViewModel.Cast)])
+                && string.IsNullOrEmpty(SelectedMovie?[nameof(MovieViewModel.Storyline)])
+                && string.IsNullOrEmpty(SelectedMovie?[nameof(MovieViewModel.Runtime)]),
+                _ => SaveMovieEdit()
+                );
+            CancelMovieEditCommand = new DelegateCommand(_ => CancelMovieEdit());
+            ChangeImageCommand = new DelegateCommand(_ => StartingImageChange?.Invoke(this, EventArgs.Empty));
+
+            RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
+            LogoutCommand = new DelegateCommand(_ => LogoutAsync());
         }
+
+        #region Authentication
 
         private async void LogoutAsync()
         {
@@ -125,11 +166,15 @@ namespace Cinema.Desktop.ViewModel
             LogoutSucceeded?.Invoke(this, EventArgs.Empty);
         }
 
+        #endregion
+
+        #region Movies
+
         public async void LoadMoviesAsync()
         {
             try
             {
-                Movies = new ObservableCollection<MovieDto>(await _service.LoadMoviesAsync());
+                Movies = new ObservableCollection<MovieViewModel>((await _service.LoadMoviesAsync()).Select(movie => (MovieViewModel)movie));
             }
             catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
             {
@@ -137,7 +182,58 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
-        public async void LoadShowtimesAsync(MovieDto movie)
+        public void AddMovie()
+        {
+            var newMovie = new MovieViewModel
+            {
+                Title = "New Movie",
+                Runtime = 100,
+                Added = DateTime.Now
+            };
+            Movies.Add(newMovie);
+            SelectedMovie = newMovie;
+            StartEditMovie();
+        }
+
+        private void StartEditMovie()
+        {
+            StartingMovieEdit?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void CancelMovieEdit()
+        {
+            if (SelectedMovie is null)
+                return;
+
+            if (SelectedMovie.Id == 0)
+            {
+                Movies.Remove(SelectedMovie);
+                SelectedMovie = null;
+            }
+
+            FinishingMovieEdit?.Invoke(this, EventArgs.Empty);
+        }
+
+        private async void SaveMovieEdit()
+        {
+            try
+            {
+                var movieDto = (MovieDto)SelectedMovie;
+                await _service.CreateMovieAsync(movieDto);
+                SelectedMovie.Id = movieDto.Id;
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+            }
+            FinishingMovieEdit?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Showtimes
+
+        public async void LoadShowtimesAsync(MovieViewModel movie)
         {
             if (movie is null || movie.Id == 0)
             {
@@ -155,6 +251,10 @@ namespace Cinema.Desktop.ViewModel
                 OnMessageApplication($"Unexpected error occured! ({ex.Message})");
             }
         }
+
+        #endregion
+
+        #region Seats
 
         public async void LoadSeatsAsync(ShowtimeDto showtime)
         {
@@ -225,5 +325,7 @@ namespace Cinema.Desktop.ViewModel
                     break;
             }
         }
+
+        #endregion
     }
 }
