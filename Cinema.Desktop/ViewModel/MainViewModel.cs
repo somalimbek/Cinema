@@ -4,6 +4,7 @@ using Cinema.Persistence.DTO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 
@@ -13,12 +14,14 @@ namespace Cinema.Desktop.ViewModel
     {
         private ObservableCollection<MovieDto> _movies;
         private ObservableCollection<ShowtimeDto> _showtimes;
-        private ObservableCollection<SeatDto> _seats;
+        private ObservableCollection<SeatViewModel> _seats;
         private readonly CinemaApiService _service;
 
-        private string _screenName = "Screen: ";
+        private string _screenName = "Screen:";
         private int _numberOfRows;
         private int _seatsPerRow;
+
+        private HashSet<SeatViewModel> _selectedSeats;
 
         public ObservableCollection<MovieDto> Movies
         {
@@ -40,7 +43,7 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
-        public ObservableCollection<SeatDto> Seats
+        public ObservableCollection<SeatViewModel> Seats
         {
             get => _seats;
             set
@@ -88,6 +91,8 @@ namespace Cinema.Desktop.ViewModel
 
         public MainViewModel(CinemaApiService service)
         {
+            _selectedSeats = new HashSet<SeatViewModel>();
+
             _service = service;
 
             RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
@@ -140,11 +145,51 @@ namespace Cinema.Desktop.ViewModel
 
             try
             {
-                Seats = new ObservableCollection<SeatDto>(await _service.LoadSeatsAsync(showtime.Id));
+                Seats = new ObservableCollection<SeatViewModel>((await _service.LoadSeatsAsync(showtime.Id))
+                    .Select(dto => new SeatViewModel
+                    {
+                        Id = dto.Id,
+                        ShowtimeId = dto.ShowtimeId,
+                        RowNumber = dto.RowNumber,
+                        SeatNumber = dto.SeatNumber,
+                        Status = dto.Status,
+                        DisplayStatus = (DisplayStatus)dto.Status,
+                        CustomerName = dto.CustomerName,
+                        CustomerPhoneNumber = dto.CustomerPhoneNumber,
+                        SelectSeatCommand = new DelegateCommand(param => SelectSeat(param as SeatViewModel))
+                    })
+                    .ToList());
             }
             catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
             {
                 OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+            }
+        }
+
+        public void SelectSeat(SeatViewModel seat)
+        {
+            if (seat is null)
+                return;
+
+            switch (seat.DisplayStatus)
+            {
+                case DisplayStatus.Free:
+                    _selectedSeats.Add(seat);
+                    seat.DisplayStatus = DisplayStatus.Selected;
+                    break;
+                case DisplayStatus.Booked:
+                    //TODO: Write out booking info
+                    _selectedSeats.Add(seat);
+                    seat.DisplayStatus = DisplayStatus.Selected;
+                    break;
+                case DisplayStatus.Sold:
+                    break;
+                case DisplayStatus.Selected:
+                    _selectedSeats.Remove(seat);
+                    seat.DisplayStatus = (DisplayStatus)seat.Status;
+                    break;
+                default:
+                    break;
             }
         }
     }

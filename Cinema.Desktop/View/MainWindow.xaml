@@ -7,13 +7,6 @@
         xmlns:local="clr-namespace:Cinema.Desktop.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200">
-    <Window.Resources>
-        <Style x:Key="MyBorderStyle" TargetType="Border">
-            <Setter Property="BorderBrush" Value="White" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="CornerRadius" Value="3" />
-        </Style>
-    </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="ContentRendered">
             <i:InvokeCommandAction Command="{Binding RefreshMoviesCommand}" />
@@ -94,25 +87,26 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource MyBorderStyle}">
-                                <Label Content="{Binding SeatNumber}">
-                                    <Label.Style>
-                                        <Style TargetType="Label">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status}" Value="Free">
-                                                    <Setter Property="Background" Value="Green" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status}" Value="Booked">
-                                                    <Setter Property="Background" Value="Yellow" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status}" Value="Sold">
-                                                    <Setter Property="Background" Value="Red" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Label.Style>
-                                </Label>
-                            </Border>
+                            <Button Command="{Binding SelectSeatCommand}" CommandParameter="{Binding}" Content="{Binding SeatNumber}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Free">
+                                                <Setter Property="Background" Value="LimeGreen" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Booked">
+                                                <Setter Property="Background" Value="Yellow" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Sold">
+                                                <Setter Property="Background" Value="Red" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Selected">
+                                                <Setter Property="Background" Value="Blue" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
