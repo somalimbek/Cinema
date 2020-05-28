@@ -241,10 +241,6 @@ namespace Cinema.Persistence
 
             #endregion
 
-            #region Employees
-
-            #endregion
-
             context.SaveChanges();
         }
 

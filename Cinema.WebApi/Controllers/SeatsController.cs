@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Cinema.Persistence;
 using Cinema.Persistence.Services;
 using Cinema.Persistence.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinema.WebApi.Controllers
 {
@@ -32,6 +33,7 @@ namespace Cinema.WebApi.Controllers
         // PUT: api/Seats/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize]
         [HttpPut]
         public IActionResult PutSeats(IEnumerable<SeatDto> seats)
         {

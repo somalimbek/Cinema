@@ -140,7 +140,7 @@ namespace Cinema.Persistence.Services
         public Movie GetMovie(int id)
         {
             return _context.Movies
-                .FirstOrDefault(movie => movie.Id == id);
+                .Single(movie => movie.Id == id);
         }
 
         public List<Movie> GetMovies(string title = null)

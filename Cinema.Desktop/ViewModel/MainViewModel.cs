@@ -191,7 +191,7 @@ namespace Cinema.Desktop.ViewModel
 
             SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(SelectedMovie));
             SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeViewModel));
-            SellSelectedSeatsCommand = new DelegateCommand(_ => SellSelectedSeats());
+            SellSelectedSeatsCommand = new DelegateCommand(_ => _selectedSeats.Count > 0,_ => SellSelectedSeats());
             RefreshSeatsCommand = new DelegateCommand(_ => !(SelectedShowtime is null), _ => LoadSeatsAsync(SelectedShowtime));
 
             AddMovieCommand = new DelegateCommand(_ => AddMovie());
@@ -375,6 +375,7 @@ namespace Cinema.Desktop.ViewModel
 
         public async void LoadSeatsAsync(ShowtimeViewModel showtime)
         {
+            _selectedSeats = new HashSet<SeatViewModel>();
             if (showtime is null || showtime.Id == 0)
             {
                 Seats = null;
