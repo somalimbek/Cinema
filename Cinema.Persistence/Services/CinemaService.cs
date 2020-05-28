@@ -333,6 +333,30 @@ namespace Cinema.Persistence.Services
             return successful;
         }
 
+        public bool SellSeats(List<Seat> seatsToSell)
+        {
+            var successful = true;
+            foreach (var seatToSell in seatsToSell)
+            {
+                var seatInDatabase = GetSeat(seatToSell.Id);
+                if (successful && (seatInDatabase.Status == SeatStatus.Free || seatInDatabase.Status == SeatStatus.Booked))
+                {
+                    _context.Entry(seatInDatabase).CurrentValues.SetValues(seatToSell);
+                    successful = true;
+                }
+                else
+                {
+                    successful = false;
+                }
+            }
+            if (successful)
+            {
+                _context.SaveChanges();
+            }
+
+            return successful;
+        }
+
         #endregion
 
         #region Delete

@@ -68,6 +68,7 @@
                         <Label Content="Showtimes:" />
                     </GroupBox.Header>
                     <DataGrid ItemsSource="{Binding Showtimes}"
+                              SelectedItem="{Binding SelectedShowtime}"
                             VerticalContentAlignment="Stretch"  IsReadOnly="True"
                             AutoGenerateColumns="False" HeadersVisibility="None">
                         <i:Interaction.Triggers>
@@ -88,42 +89,52 @@
                     </DataGrid>
                 </GroupBox>
             </Grid>
-            <GroupBox Grid.Column="1">
-                <GroupBox.Header>
-                    <Label Content="{Binding ScreenName}" />
-                </GroupBox.Header>
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding Seats}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Rows="{Binding NumberOfRows}" Columns="{Binding SeatsPerRow}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding SelectSeatCommand}" CommandParameter="{Binding}" Content="{Binding SeatNumber}">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Free">
-                                                <Setter Property="Background" Value="LimeGreen" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Booked">
-                                                <Setter Property="Background" Value="Yellow" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Sold">
-                                                <Setter Property="Background" Value="Red" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding DisplayStatus}" Value="Selected">
-                                                <Setter Property="Background" Value="Blue" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </GroupBox>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Row="0">
+                    <GroupBox.Header>
+                        <Label Content="{Binding ScreenName}" />
+                    </GroupBox.Header>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding Seats}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="{Binding NumberOfRows}" Columns="{Binding SeatsPerRow}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding SelectSeatCommand}" CommandParameter="{Binding}" Content="{Binding SeatNumber}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DisplayStatus}" Value="Free">
+                                                    <Setter Property="Background" Value="LimeGreen" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding DisplayStatus}" Value="Booked">
+                                                    <Setter Property="Background" Value="Yellow" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding DisplayStatus}" Value="Sold">
+                                                    <Setter Property="Background" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding DisplayStatus}" Value="Selected">
+                                                    <Setter Property="Background" Value="Blue" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </GroupBox>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button Width="73" Height="21" Margin="5" Content="Sell Selecded" Command="{Binding SellSelectedSeatsCommand}" />
+                    <Button Width="73" Height="21" Margin="5" Content="Reload Seats" Command="{Binding RefreshSeatsCommand}" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

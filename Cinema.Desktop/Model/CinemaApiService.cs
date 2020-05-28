@@ -162,6 +162,16 @@ namespace Cinema.Desktop.Model
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
 
+        public async Task SellSeats(IEnumerable<SeatDto> seats)
+        {
+            var response = await _client.PutAsJsonAsync("api/Seats/", seats);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NetworkException("Service returned response: " + response.StatusCode);
+            }
+        }
+
         #endregion
     }
 }

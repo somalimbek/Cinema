@@ -133,6 +133,10 @@ namespace Cinema.Desktop.ViewModel
 
         public DelegateCommand SelectShowtimeCommand { get; private set; }
 
+        public DelegateCommand SellSelectedSeatsCommand { get; set; }
+
+        public DelegateCommand RefreshSeatsCommand { get; private set; }
+
         public DelegateCommand AddMovieCommand { get; private set; }
 
         public DelegateCommand SaveMovieEditCommand { get; private set; }
@@ -175,6 +179,8 @@ namespace Cinema.Desktop.ViewModel
 
             SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(SelectedMovie));
             SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeViewModel));
+            SellSelectedSeatsCommand = new DelegateCommand(_ => SellSelectedSeats());
+            RefreshSeatsCommand = new DelegateCommand(_ => !(SelectedShowtime is null), _ => LoadSeatsAsync(SelectedShowtime));
 
             AddMovieCommand = new DelegateCommand(_ => AddMovie());
             SaveMovieEditCommand = new DelegateCommand(
@@ -422,6 +428,33 @@ namespace Cinema.Desktop.ViewModel
                     break;
                 default:
                     break;
+            }
+        }
+
+        public async void SellSelectedSeats()
+        {
+            var seatsToSell = new List<SeatDto>();
+            foreach (var seat in _selectedSeats)
+            {
+                seatsToSell.Add(new SeatDto
+                {
+                    Id = seat.Id,
+                    ShowtimeId = seat.ShowtimeId,
+                    RowNumber = seat.RowNumber,
+                    SeatNumber = seat.SeatNumber,
+                    Status = SeatStatus.Sold
+                });
+            }
+
+            try
+            {
+                await _service.SellSeats(seatsToSell);
+                _selectedSeats = new HashSet<SeatViewModel>();
+                LoadSeatsAsync(SelectedShowtime);
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})");
             }
         }
 

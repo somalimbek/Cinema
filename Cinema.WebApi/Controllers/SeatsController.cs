@@ -42,39 +42,28 @@ namespace Cinema.WebApi.Controllers
 
             return seat;
         }
-
+        */
         // PUT: api/Seats/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSeat(int id, Seat seat)
+        [HttpPut]
+        public IActionResult PutSeats(IEnumerable<SeatDto> seats)
         {
-            if (id != seat.Id)
+            if (seats.Count() == 0)
             {
                 return BadRequest();
             }
 
-            _context.Entry(seat).State = EntityState.Modified;
-
-            try
+            if (_service.SellSeats(seats.Select(dto => (Seat)dto).ToList()))
             {
-                await _context.SaveChangesAsync();
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!SeatExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
-
-            return NoContent();
         }
-
+        /*
         // POST: api/Seats
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
