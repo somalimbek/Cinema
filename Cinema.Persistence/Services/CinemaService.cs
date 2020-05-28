@@ -238,7 +238,7 @@ namespace Cinema.Persistence.Services
             return _context.Showtimes
                 .Include(showtime => showtime.Movie)
                 .Include(showtime => showtime.Screen)
-                .FirstOrDefault(showtime => showtime.Id == id);
+                .Single(showtime => showtime.Id == id);
         }
 
         public List<List<Showtime>> GetShowtimesForMovie(int movieId)
