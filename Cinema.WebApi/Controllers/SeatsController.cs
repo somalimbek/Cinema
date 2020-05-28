@@ -28,21 +28,7 @@ namespace Cinema.WebApi.Controllers
         {
             return _service.GetSeatsListForShowtime(showtimeId).Select(seat => (SeatDto)seat).ToList();
         }
-        /*
-        // GET: api/Seats/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Seat>> GetSeat(int id)
-        {
-            var seat = await _context.Seats.FindAsync(id);
 
-            if (seat == null)
-            {
-                return NotFound();
-            }
-
-            return seat;
-        }
-        */
         // PUT: api/Seats/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
@@ -63,39 +49,5 @@ namespace Cinema.WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        /*
-        // POST: api/Seats
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<Seat>> PostSeat(Seat seat)
-        {
-            _context.Seats.Add(seat);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSeat", new { id = seat.Id }, seat);
-        }
-
-        // DELETE: api/Seats/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Seat>> DeleteSeat(int id)
-        {
-            var seat = await _context.Seats.FindAsync(id);
-            if (seat == null)
-            {
-                return NotFound();
-            }
-
-            _context.Seats.Remove(seat);
-            await _context.SaveChangesAsync();
-
-            return seat;
-        }
-
-        private bool SeatExists(int id)
-        {
-            return _context.Seats.Any(e => e.Id == id);
-        }
-        */
     }
 }
