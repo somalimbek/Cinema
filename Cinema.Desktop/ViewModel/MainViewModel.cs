@@ -27,6 +27,8 @@ namespace Cinema.Desktop.ViewModel
         private int _numberOfRows;
         private int _seatsPerRow;
 
+        private string _infoString = "";
+
         private HashSet<SeatViewModel> _selectedSeats;
 
         public ObservableCollection<MovieViewModel> Movies
@@ -125,6 +127,16 @@ namespace Cinema.Desktop.ViewModel
             set
             {
                 _seatsPerRow = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string InfoString
+        {
+            get => _infoString;
+            set
+            {
+                _infoString = value;
                 OnPropertyChanged();
             }
         }
@@ -412,21 +424,25 @@ namespace Cinema.Desktop.ViewModel
             switch (seat.DisplayStatus)
             {
                 case DisplayStatus.Free:
+                    InfoString = "";
                     _selectedSeats.Add(seat);
                     seat.DisplayStatus = DisplayStatus.Selected;
                     break;
                 case DisplayStatus.Booked:
-                    //TODO: Write out booking info
+                    InfoString = "Customer name: " + seat.CustomerName + " | Phone: " + seat.CustomerPhoneNumber;
                     _selectedSeats.Add(seat);
                     seat.DisplayStatus = DisplayStatus.Selected;
                     break;
                 case DisplayStatus.Sold:
+                    InfoString = "";
                     break;
                 case DisplayStatus.Selected:
+                    InfoString = "";
                     _selectedSeats.Remove(seat);
                     seat.DisplayStatus = (DisplayStatus)seat.Status;
                     break;
                 default:
+                    InfoString = "";
                     break;
             }
         }

@@ -133,6 +133,7 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
                     <Button Width="73" Height="21" Margin="5" Content="Sell Selecded" Command="{Binding SellSelectedSeatsCommand}" />
                     <Button Width="73" Height="21" Margin="5" Content="Reload Seats" Command="{Binding RefreshSeatsCommand}" />
+                    <TextBlock Width="500" Height="21" Margin="5" Text="{Binding InfoString}" TextAlignment="Center" />
                 </StackPanel>
             </Grid>
         </Grid>
