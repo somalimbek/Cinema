@@ -16,10 +16,12 @@ namespace Cinema.Desktop.ViewModel
 
         private readonly CinemaApiService _service;
         private ObservableCollection<MovieViewModel> _movies;
-        private ObservableCollection<ShowtimeDto> _showtimes;
+        private ObservableCollection<ShowtimeViewModel> _showtimes;
+        private ObservableCollection<ScreenDto> _screens;
         private ObservableCollection<SeatViewModel> _seats;
 
         private MovieViewModel _selectedMovie;
+        private ShowtimeViewModel _selectedShowtime;
 
         private string _screenName = _screenLabel;
         private int _numberOfRows;
@@ -37,6 +39,11 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
+        public List<MovieViewModel> MoviesForCombo
+        {
+            get => Movies.ToList();
+        }
+
         public MovieViewModel SelectedMovie
         {
             get => _selectedMovie;
@@ -47,7 +54,7 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
-        public ObservableCollection<ShowtimeDto> Showtimes
+        public ObservableCollection<ShowtimeViewModel> Showtimes
         {
             get => _showtimes;
             set
@@ -55,6 +62,31 @@ namespace Cinema.Desktop.ViewModel
                 _showtimes = value;
                 OnPropertyChanged();
             }
+        }
+
+        public ShowtimeViewModel SelectedShowtime
+        {
+            get => _selectedShowtime;
+            set
+            {
+                _selectedShowtime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<ScreenDto> Screens
+        {
+            get => _screens;
+            set
+            {
+                _screens = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public List<ScreenDto> ScreensForCombo
+        {
+            get => Screens.ToList();
         }
 
         public ObservableCollection<SeatViewModel> Seats
@@ -111,6 +143,12 @@ namespace Cinema.Desktop.ViewModel
 
         public DelegateCommand RefreshMoviesCommand { get; private set; }
 
+        public DelegateCommand AddShowtimeCommand { get; private set; }
+
+        public DelegateCommand SaveShowtimeEditCommand { get; private set; }
+
+        public DelegateCommand CancelShowtimeEditCommand { get; private set; }
+
         public DelegateCommand LogoutCommand { get; private set; }
 
         public event EventHandler LogoutSucceeded;
@@ -121,14 +159,22 @@ namespace Cinema.Desktop.ViewModel
 
         public event EventHandler StartingImageChange;
 
+        public event EventHandler StartingShowtimeEdit;
+
+        public event EventHandler FinishingShowtimeEdit;
+
         public MainViewModel(CinemaApiService service)
         {
             _selectedSeats = new HashSet<SeatViewModel>();
+            _screens = new ObservableCollection<ScreenDto>();
 
             _service = service;
 
+            RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
+            LogoutCommand = new DelegateCommand(_ => LogoutAsync());
+
             SelectMovieCommand = new DelegateCommand(param => LoadShowtimesAsync(SelectedMovie));
-            SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeDto));
+            SelectShowtimeCommand = new DelegateCommand(param => LoadSeatsAsync(param as ShowtimeViewModel));
 
             AddMovieCommand = new DelegateCommand(_ => AddMovie());
             SaveMovieEditCommand = new DelegateCommand(
@@ -142,8 +188,9 @@ namespace Cinema.Desktop.ViewModel
             CancelMovieEditCommand = new DelegateCommand(_ => CancelMovieEdit());
             ChangeImageCommand = new DelegateCommand(_ => StartingImageChange?.Invoke(this, EventArgs.Empty));
 
-            RefreshMoviesCommand = new DelegateCommand(_ => LoadMoviesAsync());
-            LogoutCommand = new DelegateCommand(_ => LogoutAsync());
+            AddShowtimeCommand = new DelegateCommand(_ => !(SelectedMovie is null), _ => AddShowtime());
+            SaveShowtimeEditCommand = new DelegateCommand(_ => SaveShowtimeEdit());
+            CancelShowtimeEditCommand = new DelegateCommand(_ => CancelShowtimeEdit());
         }
 
         #region Authentication
@@ -174,7 +221,9 @@ namespace Cinema.Desktop.ViewModel
         {
             try
             {
-                Movies = new ObservableCollection<MovieViewModel>((await _service.LoadMoviesAsync()).Select(movie => (MovieViewModel)movie));
+                Movies = new ObservableCollection<MovieViewModel>(
+                    (await _service.LoadMoviesAsync())
+                    .Select(movie => (MovieViewModel)movie));
             }
             catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
             {
@@ -244,7 +293,9 @@ namespace Cinema.Desktop.ViewModel
             }
             try
             {
-                Showtimes = new ObservableCollection<ShowtimeDto>(await _service.LoadShowtimesAsync(movie.Id));
+                Showtimes = new ObservableCollection<ShowtimeViewModel>(
+                    (await _service.LoadShowtimesAsync(movie.Id))
+                    .Select(showtime => (ShowtimeViewModel)showtime));
             }
             catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
             {
@@ -252,11 +303,59 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
+        public async void AddShowtime()
+        {
+            var newShowtime = new ShowtimeViewModel
+            {
+                MovieId = SelectedMovie.Id,
+                Time = DateTime.Now,
+                ScreenId = 1
+            };
+            Showtimes.Add(newShowtime);
+            SelectedShowtime = newShowtime;
+            Screens = new ObservableCollection<ScreenDto>(await _service.LoadScreensAsync());
+            StartEditShowtime();
+        }
+
+        public void StartEditShowtime()
+        {
+            StartingShowtimeEdit?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void CancelShowtimeEdit()
+        {
+            if (SelectedShowtime is null)
+                return;
+
+            if (SelectedShowtime.Id == 0)
+            {
+                Showtimes.Remove(SelectedShowtime);
+                SelectedShowtime = null;
+            }
+
+            FinishingShowtimeEdit?.Invoke(this, EventArgs.Empty);
+        }
+
+        private async void SaveShowtimeEdit()
+        {
+            try
+            {
+                var showtimeDto = (ShowtimeDto)SelectedShowtime;
+                await _service.CreateShowtimeAsync(showtimeDto);
+                SelectedShowtime.Id = showtimeDto.Id;
+                FinishingShowtimeEdit?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex) when (ex is NetworkException || ex is HttpRequestException)
+            {
+                OnMessageApplication($"Unexpected error occured! ({ex.Message})\nMake sure the created showtime is not overlapping with other showtimes.");
+            }
+        }
+
         #endregion
 
         #region Seats
 
-        public async void LoadSeatsAsync(ShowtimeDto showtime)
+        public async void LoadSeatsAsync(ShowtimeViewModel showtime)
         {
             if (showtime is null || showtime.Id == 0)
             {

@@ -24,6 +24,7 @@ namespace Cinema.Desktop
         private MainWindow _mainView;
         private LoginWindow _loginView;
         private MovieEditorWindow _movieEditorView;
+        private ShowtimeEditorWindow _showtimeEditorView;
 
         public App()
         {
@@ -48,9 +49,13 @@ namespace Cinema.Desktop
             _mainViewModel = new MainViewModel(_service);
             _mainViewModel.LogoutSucceeded += ViewModel_LogoutSucceeded;
             _mainViewModel.MessageApplication += ViewModel_MessageApplication;
+
             _mainViewModel.StartingMovieEdit += ViewModel_StartingMovieEdit;
             _mainViewModel.FinishingMovieEdit += ViewModel_FinishingMovieEdit;
             _mainViewModel.StartingImageChange += ViewModel_StartingImageChange;
+
+            _mainViewModel.StartingShowtimeEdit += ViewModel_StartingShowtimeEdit;
+            _mainViewModel.FinishingShowtimeEdit += ViewModel_FinishingShowtimeEdit;
 
             _mainView = new MainWindow
             {
@@ -111,6 +116,23 @@ namespace Cinema.Desktop
             if (dialog.ShowDialog(_movieEditorView).GetValueOrDefault(false))
             {
                 _mainViewModel.SelectedMovie.Poster = await File.ReadAllBytesAsync(dialog.FileName);
+            }
+        }
+
+        private void ViewModel_StartingShowtimeEdit(object sender, EventArgs e)
+        {
+            _showtimeEditorView = new ShowtimeEditorWindow
+            {
+                DataContext = _mainViewModel
+            };
+            _showtimeEditorView.ShowDialog();
+        }
+
+        private void ViewModel_FinishingShowtimeEdit(object sender, EventArgs e)
+        {
+            if (_showtimeEditorView.IsActive)
+            {
+                _showtimeEditorView.Close();
             }
         }
     }

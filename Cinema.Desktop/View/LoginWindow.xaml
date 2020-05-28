@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Cinema.Desktop.View"
         mc:Ignorable="d"
         FocusManager.FocusedElement="{Binding ElementName=txtName}"
-        Title="TodoList - Login" Height="Auto" Width="250"
+        Title="Cinema - Login" Height="Auto" Width="250"
         ResizeMode="NoResize" SizeToContent="Height" >
     <Grid Margin="10">
         <Grid.ColumnDefinitions>

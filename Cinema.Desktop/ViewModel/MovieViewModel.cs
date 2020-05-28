@@ -133,8 +133,6 @@ namespace Cinema.Desktop.ViewModel
             }
         }
 
-        public Boolean IsDirty { get; private set; } = false;
-
         public String Error => String.Empty;
 
         public static explicit operator MovieViewModel(MovieDto dto) => new MovieViewModel

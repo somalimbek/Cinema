@@ -1,0 +1,69 @@
+﻿<Window x:Class="Cinema.Desktop.View.ShowtimeEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cinema.Desktop.View"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Showtime Editor" Height="Auto" Width="500"
+        ResizeMode="NoResize" SizeToContent="Height">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
+                        Path=(Validation.Errors)/ErrorContent}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding CancelShowtimeEditCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Movie:" VerticalAlignment="Center" />
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="5"
+                  ItemsSource="{Binding MoviesForCombo}"
+                  SelectedValue="{Binding SelectedShowtime.MovieId}"
+                  SelectedValuePath="Id"
+                  DisplayMemberPath="Title" />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Time:" VerticalAlignment="Center" />
+        <xctk:DateTimePicker Grid.Row="1" Grid.Column="1" Margin="5"
+                    Value="{Binding SelectedShowtime.Time}"/>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Screen:" VerticalAlignment="Center" />
+        <ComboBox Grid.Row="2" Grid.Column="1" Margin="5"
+                  ItemsSource="{Binding ScreensForCombo}"
+                  SelectedValue="{Binding SelectedShowtime.ScreenId}"
+                  SelectedValuePath="Id"
+                  DisplayMemberPath="Name" />
+
+        <Button Grid.Row="3" Grid.Column="0" Content="Cancel"
+                HorizontalAlignment="Left" VerticalAlignment="Center"
+                Width="73"  Height="21"  Margin="5"
+                IsCancel="True"
+                Command="{Binding CancelShowtimeEditCommand}"/>
+
+        <Button Grid.Row="3" Grid.Column="1" Content="Save"
+                HorizontalAlignment="Right" VerticalAlignment="Center"
+                Width="73"  Height="21"  Margin="5"
+                IsDefault="True"
+                Command="{Binding SaveShowtimeEditCommand}"/>
+    </Grid>
+</Window>

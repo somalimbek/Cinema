@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Cinema.Desktop.View"
         xmlns:viewModel="clr-namespace:Cinema.Desktop.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200">
+        Title="Cinema" Height="700" Width="1200">
     <Window.Resources>
         <viewModel:SelectedMovieConverter x:Key="selectMovieConverter" />
     </Window.Resources>
@@ -21,6 +21,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New">
                     <MenuItem Header="_Movie" Command="{Binding AddMovieCommand}" />
+                    <MenuItem Header="_Showtime" Command="{Binding AddShowtimeCommand}" />
                 </MenuItem>
                 <MenuItem Header="_Refresh movies" Command="{Binding RefreshMoviesCommand}" />
                 <MenuItem Header="_Logout" Command="{Binding LogoutCommand}" />
@@ -33,8 +34,8 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
                     <RowDefinition Height="3*" />
-                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <GroupBox Grid.Row="0">
                     <GroupBox.Header>

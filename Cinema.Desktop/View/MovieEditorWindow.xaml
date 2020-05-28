@@ -7,7 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MovieEditorWindow" Height="Auto" Width="500"
+        Title="Movie Editor" Height="Auto" Width="500"
         ResizeMode="NoResize" SizeToContent="Height">
     <Window.Resources>
         <Style TargetType="TextBox">

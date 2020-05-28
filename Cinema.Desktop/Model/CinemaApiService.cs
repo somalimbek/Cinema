@@ -61,7 +61,7 @@ namespace Cinema.Desktop.Model
 
         #endregion
 
-        #region Movie
+        #region Movies
 
         public async Task<IEnumerable<MovieDto>> LoadMoviesAsync()
         {
@@ -77,13 +77,14 @@ namespace Cinema.Desktop.Model
 
         public async Task CreateMovieAsync(MovieDto movie)
         {
-            var response = await _client.PostAsJsonAsync("api/movies/", movie);
-            movie.Id = (await response.Content.ReadAsAsync<MovieDto>()).Id;
+            var response = await _client.PostAsJsonAsync("api/Movies/", movie);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new NetworkException("Service returned response: " + response.StatusCode);
             }
+
+            movie.Id = (await response.Content.ReadAsAsync<MovieDto>()).Id;
         }
 
         #endregion
@@ -103,6 +104,18 @@ namespace Cinema.Desktop.Model
             throw new NetworkException("Service returned response: " + response.StatusCode);
         }
 
+        public async Task CreateShowtimeAsync(ShowtimeDto showtime)
+        {
+            var response = await _client.PostAsJsonAsync("api/Showtimes/", showtime);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NetworkException("Service returned response: " + response.StatusCode);
+            }
+
+            showtime.Id = (await response.Content.ReadAsAsync<ShowtimeDto>()).Id;
+        }
+
         #endregion
 
         #region Screens
@@ -110,11 +123,23 @@ namespace Cinema.Desktop.Model
         public async Task<ScreenDto> LoadScreenAsync(int showtimeId)
         {
             var response = await _client.GetAsync(
-                QueryHelpers.AddQueryString("api/Screens/", "showtimeId", showtimeId.ToString()));
+                QueryHelpers.AddQueryString("api/Screens/GetScreen", "showtimeId", showtimeId.ToString()));
 
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsAsync<ScreenDto>();
+            }
+
+            throw new NetworkException("Service returned response: " + response.StatusCode);
+        }
+
+        public async Task<IEnumerable<ScreenDto>> LoadScreensAsync()
+        {
+            var response = await _client.GetAsync("api/Screens/GetScreens");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsAsync<IEnumerable<ScreenDto>>();
             }
 
             throw new NetworkException("Service returned response: " + response.StatusCode);

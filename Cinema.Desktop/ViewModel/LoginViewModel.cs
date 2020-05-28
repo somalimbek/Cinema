@@ -60,6 +60,7 @@ namespace Cinema.Desktop.ViewModel
             catch (NetworkException ex)
             {
                 OnMessageApplication($"Unexpected error occured! ({ex.Message})");
+                IsLoading = false;
             }
         }
 

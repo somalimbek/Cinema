@@ -11,7 +11,7 @@ using Cinema.Persistence.DTO;
 
 namespace Cinema.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ScreensController : ControllerBase
     {
@@ -22,7 +22,14 @@ namespace Cinema.WebApi.Controllers
             _service = service;
         }
 
-        // GET: api/Screens
+        // GET: api/Screens/GetScreens
+        [HttpGet]
+        public ActionResult<IEnumerable<ScreenDto>> GetScreens()
+        {
+            return _service.GetScreens().Select(screen => (ScreenDto)screen).ToList();
+        }
+
+        // GET: api/Screens/GetScreen
         [HttpGet]
         public ActionResult<ScreenDto> GetScreen(int showtimeId)
         {

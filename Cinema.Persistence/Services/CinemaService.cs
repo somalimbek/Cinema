@@ -31,6 +31,89 @@ namespace Cinema.Persistence.Services
             return movie;
         }
 
+        public List<Seat> CreateSeatsForShowtime(int id)
+        {
+            var seats = new List<Seat>();
+
+            var screen = GetShowtime(id).Screen;
+            for (int row = 0; row < screen.NumberOfRows; row++)
+            {
+                for (int seat = 0; seat < screen.SeatsPerRow; seat++)
+                {
+                    seats.Add(new Seat
+                    {
+                        ShowtimeId = id,
+                        RowNumber = row,
+                        SeatNumber = seat,
+                        Status = SeatStatus.Free
+                    });
+                }
+            }
+
+            try
+            {
+                _context.Seats.AddRange(seats);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                return null;
+            }
+
+            return seats;
+        }
+
+        public Showtime CreateShowtime(Showtime newShowtime)
+        {
+            var movie = GetMovie(newShowtime.MovieId);
+            var previousShowtimes = _context.Showtimes
+                .Include(showtime => showtime.Movie)
+                .Where(showtime => showtime.ScreenId == newShowtime.ScreenId)
+                .Where(showtime => showtime.Time < newShowtime.Time)
+                .OrderByDescending(showtime => showtime.Time)
+                .ToList();
+
+            Showtime prevShowtime;
+            if (previousShowtimes.Count > 0)
+                prevShowtime = previousShowtimes.First();
+            else
+                prevShowtime = null;
+
+            if (prevShowtime != null && prevShowtime.Time.AddMinutes(prevShowtime.Movie.Runtime + 15) > newShowtime.Time)
+            {
+                return null;
+            }
+
+            var followingShowtimes = _context.Showtimes
+                .Where(showtime => showtime.ScreenId == newShowtime.ScreenId)
+                .Where(showtime => showtime.Time > newShowtime.Time)
+                .OrderBy(showtime => showtime.Time)
+                .ToList();
+
+            Showtime nextShowtime;
+            if (followingShowtimes.Count > 0)
+                nextShowtime = followingShowtimes.First();
+            else
+                nextShowtime = null;
+
+            if (nextShowtime != null && newShowtime.Time.AddMinutes(movie.Runtime + 15) > nextShowtime.Time)
+            {
+                return null;
+            }
+
+            try
+            {
+                _context.Add(newShowtime);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                return null;
+            }
+
+            return newShowtime;
+        }
+
         #endregion
 
         #region Read
@@ -68,6 +151,14 @@ namespace Cinema.Persistence.Services
                 .ToList();
         }
 
+        public List<Screen> GetScreens(string name = null)
+        {
+            return _context.Screens
+                .Where(screen => screen.Name.Contains(name ?? ""))
+                .OrderBy(screen => screen.Name)
+                .ToList();
+        }
+
         public Seat GetSeat(int id)
         {
             var seat = _context.Seats
@@ -83,8 +174,13 @@ namespace Cinema.Persistence.Services
                 .OrderBy(seat => seat.RowNumber)
                 .ToList();
 
+            if (seatsForShowtime.Count == 0)
+            {
+                seatsForShowtime = CreateSeatsForShowtime(showtimeId);
+            }
+
             var seatsOrderedByRowAndSeatNumber = new List<Seat>();
-            var seatsOfRow = new List<Seat>() { seatsForShowtime[0] };
+            var seatsOfRow = new List<Seat>() { seatsForShowtime.First() };
             for (int i = 1; i < seatsForShowtime.Count; i++)
             {
                 if (seatsForShowtime[i].RowNumber == seatsForShowtime[i - 1].RowNumber && i != seatsForShowtime.Count - 1)
